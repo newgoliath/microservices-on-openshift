@@ -2,7 +2,7 @@ oc project $OSE_SERVICES_PROJECT
 oc import-image --from=registry.access.redhat.com/jboss-webserver-3/webserver30-tomcat8-openshift tomcat8 --confirm
 
 oc new-app \
-https://github.com/veermuchandi/microservices-on-openshift.git \
+https://github.com/newgoliath/microservices-on-openshift.git \
 --context-dir='java-twitter-feed-api' \
 --image-stream='tomcat8'  \
 --name='twitter-api' -l microservice=twittersvc
