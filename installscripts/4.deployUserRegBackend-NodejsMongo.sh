@@ -7,7 +7,7 @@ MONGODB_DATABASE=userdb MONGODB_ADMIN_PASSWORD=password \
   registry.access.redhat.com/rhscl/mongodb-26-rhel7 \
 --name mongodb -l microservice=userregsvc
 
-oc deploy mongodb --latest
+#oc deploy mongodb --latest
 
 oc new-app -e EMAIL_APPLICATION_DOMAIN=$EMAIL_SERVICE_URL \
 MONGODB_DATABASE=userdb MONGODB_PASSWORD=password \
