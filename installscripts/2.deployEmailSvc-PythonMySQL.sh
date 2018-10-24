@@ -22,5 +22,5 @@ MYSQL_SERVICE_HOST='MYSQL' \
   --name=emailsvc --image-stream='python:2.7'  -l microservice=emailsvc
 
 oc create configmap email-props --from-literal=GMAIL_USERNAME=$FROM_GMAIL --from-literal=GMAIL_PASSWORD=$FROM_GMAIL_PASSWORD
-oc env dc/emailsvc --from=configmap/email-props 
+oc set env dc/emailsvc --from=configmap/email-props 
 
