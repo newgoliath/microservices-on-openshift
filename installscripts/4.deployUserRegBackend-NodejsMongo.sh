@@ -13,7 +13,7 @@ oc new-app -e EMAIL_APPLICATION_DOMAIN=$EMAIL_SERVICE_URL \
 MONGODB_DATABASE=userdb MONGODB_PASSWORD=password \
 MONGODB_USER=mongouser DATABASE_SERVICE_NAME=mongodb \
 --context-dir='nodejs-users-api' \
-https://github.com/debianmaster/microservices-on-openshift.git \
+https://github.com/newgoliath/microservices-on-openshift.git \
 --name='userregsvc' -l microservice=userregsvc
 
 oc expose svc/userregsvc
