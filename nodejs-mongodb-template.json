@@ -139,7 +139,7 @@
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "name": "${APPLICATION_NAME}:latest"
+                                "name": "${APPLICATION_NAME}:8"
                             }
                         }
                     },
