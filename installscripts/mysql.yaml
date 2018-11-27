@@ -1,0 +1,149 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mysql
+      microservice: emailsvc
+    name: mysql
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: registry.access.redhat.com/rhscl/mysql-56-rhel7
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/rhscl/mysql-56-rhel7
+      generation: null
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mysql
+      microservice: emailsvc
+    name: mysql
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: mysql
+      deploymentconfig: mysql
+      microservice: emailsvc
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        post:
+          execNewPod:
+            command:
+            - /bin/sh
+            - -c
+            - hostname&&sleep 10&&echo $QUERY | /opt/rh/rh-mysql56/root/usr/bin/mysql
+              -h $MYSQL_SERVICE_HOST -u $MYSQL_USER -D $MYSQL_DATABASE -p$MYSQL_PASSWORD
+              -P 3306
+            containerName: mysql
+            env:
+            - name: QUERY
+              value: CREATE TABLE IF NOT EXISTS emails (from_add varchar(40),to_add
+                varchar(40), subject varchar(40), body varchar(200), created_at date);
+                insert into emails(from_add,to_add,subject,created_at) values("secret@squirrel.com","admin@mitzi.com","Problem with my order","2018-01-01");
+                insert into emails(from_add,to_add,subject,created_at) values("inspector@cluseau.com","admin@mitzi.com","Found something you might be interested in...","2018-02-02");
+                insert into emails(from_add,to_add,subject,created_at) values("donald@trump.com","admin@mitzi.com","Cease and desist","2018-03-03");
+                insert into emails(from_add,to_add,subject,created_at) values("liberace@pianoace.com","admin@mitzi.com","I need a new piano","2018-04-04");
+                insert into emails(from_add,to_add,subject,created_at) values("elwood@bluesbros.com","admin@mitzi.com","When are we putting the band back together?","2018-05-05");
+          failurePolicy: ignore
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: mysql
+          deploymentconfig: mysql
+          microservice: emailsvc
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_DATABASE
+            value: microservices
+          - name: MYSQL_PASSWORD
+            value: password
+          - name: MYSQL_USER
+            value: app_user
+          image: registry.access.redhat.com/rhscl/mysql-56-rhel7@sha256:2c5483929f95892100c2f8ff45ee405cea0ca2380ddce2cbf5409e9c5240204f
+          imagePullPolicy: Always
+          name: mysql
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql/data
+            name: mysql-volume-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: mysql-volume-1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mysql
+        from:
+          kind: ImageStreamTag
+          name: mysql:latest
+          namespace: msinfra
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mysql
+      microservice: emailsvc
+    name: mysql
+  spec:
+    ports:
+    - name: 3306-tcp
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      app: mysql
+      deploymentconfig: mysql
+      microservice: emailsvc
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
